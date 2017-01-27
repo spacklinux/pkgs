@@ -84,8 +84,6 @@ end
 		install -d %{BUILDROOT}/etc/ld.so.conf.d %{BUILDROOT}/usr/lib/locale
 		cp -v ../%{thisapp}/nscd/nscd.conf %{BUILDROOT}/etc/nscd.conf
 		mkdir -pv %{BUILDROOT}/var/cache/nscd
-		install -v -Dm644 ../%{thisapp}/nscd/nscd.tmpfiles %{BUILDROOT}/usr/lib/tmpfiles.d/nscd.conf
-		install -v -Dm644 ../%{thisapp}/nscd/nscd.service %{BUILDROOT}/lib/systemd/system/nscd.service
 		mkdir -pv %{BUILDROOT}/usr/lib/locale
 		make install_root=%{BUILDROOT} localedata/install-locales
 		install -m 0644 %{DIR_SOURCE}/{nsswitch.conf,ld.so.conf} %{BUILDROOT}/etc
