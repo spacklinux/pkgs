@@ -1,0 +1,113 @@
+###############################################################################
+# non.org    - non                            #
+# Copyright (C) - non <non>                   #
+###############################################################################
+
+name       = glibc
+version    = 2.24
+release    = 1
+
+maintainer = Egor Mikhailov <nagakamira@mail.ru>
+groups     = Base/System
+url        = http://www.gnu.org/software/libc/
+license    = GPL
+summary    = GNU C libraries
+
+description
+	This package contains the GNU C libraries and header files. The GNU C library was written originally by Roland McGrath, and is 		currently maintained by Ulrich Drepper. Some parts of the library were contributed or worked on by other people. You'll need this 		package to compile programs.
+
+end
+
+source_dl  = https://ftp.gnu.org/gnu/glibc/
+sources    = %{thisapp}.tar.xz
+
+build
+	requires
+		autoconf
+		automake
+		binutils
+		gcc
+		gettext
+		kernel-headers
+		texinfo
+	end
+
+	if "%{DISTRO_ARCH}" == "x86_64"
+		GLIBC_FLAGS += -mtune=generic
+	end
+
+	export CFLAGS   = %{GLIBC_FLAGS}
+	export CXXFLAGS = %{GLIBC_FLAGS}
+
+	export QUALITY_AGENT_RPATH_ALLOW_ORIGIN=yes
+
+	prepare_cmds
+
+	configure_options = \
+		--prefix=/usr          \
+		--libexecdir=/usr/lib \
+		--with-headers=/usr/include \
+		--enable-kernel=3.1.0 \
+		--enable-bind-now \
+		--enable-add-ons \
+		--enable-static-nss \
+		--disable-profile \
+		--disable-werror \
+		--without-cvs \
+		--without-gd \
+		--without-selinux \
+		--enable-lock-elision \
+		--enable-obsolete-rpc        \
+		--enable-stackguard-randomization \
+		--enable-multi-arch
+
+	end
+end
+
+build
+		mkdir -v %{DIR_SRC}/build
+		cd %{DIR_SRC}/build
+		../%{thisapp}/configure \
+			%{configure_options}
+		make
+
+end
+
+	install
+		cd %{DIR_SRC}/build
+		make install_root=%{BUILDROOT} install
+		mkdir -pv %{BUILDROOT}/etc/{default,ld.so.conf.d}
+		rm -vf %{BUILDROOT}/sbin/sln \
+			%{BUILDROOT}/usr/bin/rpcinfo
+		ln -sf ../usr/share/zoneinfo/UTC %{BUILDROOT}/etc/localtime
+		install -d %{BUILDROOT}/etc/ld.so.conf.d %{BUILDROOT}/usr/lib/locale
+		cp -v ../%{thisapp}/nscd/nscd.conf %{BUILDROOT}/etc/nscd.conf
+		mkdir -pv %{BUILDROOT}/var/cache/nscd
+		install -v -Dm644 ../%{thisapp}/nscd/nscd.tmpfiles %{BUILDROOT}/usr/lib/tmpfiles.d/nscd.conf
+		install -v -Dm644 ../%{thisapp}/nscd/nscd.service %{BUILDROOT}/lib/systemd/system/nscd.service
+		mkdir -pv %{BUILDROOT}/usr/lib/locale
+		make install_root=%{BUILDROOT} localedata/install-locales
+		install -m 0644 %{DIR_SOURCE}/{nsswitch.conf,ld.so.conf} %{BUILDROOT}/etc
+		mkdir -pv %{BUILDROOT}/etc/ld.so.conf.d
+		rm -rf	%{BUILDROOT}/usr/bin/tzselect \
+			%{BUILDROOT}/usr/sbin/z{dump,ic}
+	end
+end
+
+packages
+	package %{name}
+
+		requires
+			tzdata
+			kernel-headers
+			spack-release
+	end
+
+	package %{name}-devel
+		template DEVEL
+
+		requires
+			glibc = %{thisver}
+	end
+	
+end
