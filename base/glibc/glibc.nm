@@ -6,6 +6,7 @@
 name       = glibc
 version    = 2.24
 release    = 1
+sup_arches = x86_64 i686
 
 maintainer = Egor Mikhailov <nagakamira@mail.ru>
 groups     = Base/System
@@ -101,6 +102,10 @@ packages
 			tzdata
 			kernel-headers
 			spack-release
+	end
+			
+		script postup
+		ldconfig -r
 	end
 
 	package %{name}-devel
