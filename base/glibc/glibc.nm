@@ -80,7 +80,6 @@ end
 		mkdir -pv %{BUILDROOT}/etc/{default,ld.so.conf.d}
 		rm -vf %{BUILDROOT}/sbin/sln \
 			%{BUILDROOT}/usr/bin/rpcinfo
-		ln -sf ../usr/share/zoneinfo/UTC %{BUILDROOT}/etc/localtime
 		install -d %{BUILDROOT}/etc/ld.so.conf.d %{BUILDROOT}/usr/lib/locale
 		cp -v ../%{thisapp}/nscd/nscd.conf %{BUILDROOT}/etc/nscd.conf
 		mkdir -pv %{BUILDROOT}/var/cache/nscd
