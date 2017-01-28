@@ -86,7 +86,6 @@ end
 		mkdir -pv %{BUILDROOT}/var/cache/nscd
 		install -v -Dm644 ../%{thisapp}/nscd/nscd.tmpfiles %{BUILDROOT}/usr/lib/tmpfiles.d/nscd.conf
 		install -v -Dm644 ../%{thisapp}/nscd/nscd.service %{BUILDROOT}/lib/systemd/system/nscd.service
-		mkdir -pv %{BUILDROOT}/usr/lib/locale
 		install -m 0644 %{DIR_SOURCE}/{nsswitch.conf,ld.so.conf} %{BUILDROOT}/etc
 		mkdir -pv %{BUILDROOT}/etc/ld.so.conf.d
 		rm -rf	%{BUILDROOT}/usr/bin/tzselect \
